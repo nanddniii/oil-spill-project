@@ -1,70 +1,69 @@
-from services.scoring import calculate_suspicion_score
+"""
+Backward-compatible wrapper around services/ais_attribution.py.
+
+`find_vessels(latitude, longitude, ...)` is what main.py's /api/investigate
+endpoint calls. The real Member 3 implementation lives in
+ais_attribution.py (get_vessel_attribution), which takes the full
+origin/spill_time/AIS interface described in the spec and returns richer
+vessel dicts keyed by "mmsi" (plus fields like "name"/"movement_direction"
+not exposed on the API's VesselResult schema).
+
+`to_vessel_result_dicts()` below is the single shared place that adapts
+those raw dicts down to the VesselResult schema shape ("id" instead of
+"mmsi", only the exposed fields). It's used both by find_vessels() (for
+/api/investigate) and directly by main.py's /api/suspects endpoint, so the
+mapping only needs to be correct in one place.
+"""
+
+from services.ais_attribution import get_vessel_attribution
 
 
-def find_vessels(latitude: float, longitude: float):
-
-    # Temporary synthetic vessel data.
-    # Later, this will be replaced with real/synthetic AIS processing.
-    vessels = [
+def to_vessel_result_dicts(raw_vessels: list) -> list:
+    """
+    Adapts get_vessel_attribution()'s raw vessel dicts (keyed by "mmsi")
+    to the shape the API's VesselResult/AttributionResponse models expect
+    (keyed by "id"). Shared by both /api/investigate and /api/suspects so
+    there's one mapping to keep correct, not two copies that can drift.
+    """
+    return [
         {
-            "id": "V001",
-            "proximity": 90,
-            "timing": 95,
-            "trajectory": 80,
-            "heading": 85,
-            "ais_anomaly": 70
-        },
-        {
-            "id": "V002",
-            "proximity": 50,
-            "timing": 40,
-            "trajectory": 45,
-            "heading": 50,
-            "ais_anomaly": 20
+            "id": v["mmsi"],
+            "mmsi": v["mmsi"],
+            "name": v.get("name") or f"Unknown Vessel ({v['mmsi']})",
+            "score": v["score"],
+            "reasons": v["reasons"],
+            "risk_level": v["risk_level"],
+            "confidence": v["confidence"],
+            "distance_km": v["distance_km"],
+            "time_difference_minutes": v["time_difference_minutes"],
+            "trajectory_alignment": v["trajectory_alignment"],
+            "ais_anomalies": v["ais_anomalies"],
+            "score_breakdown": v["score_breakdown"],
         }
+        for v in raw_vessels
     ]
 
-    results = []
 
-    for vessel in vessels:
+def find_vessels(latitude: float, longitude: float, spill_time=None,
+                  ais_data=None, uncertainty_km: float = None):
+    """
+    Thin adapter kept for backward compatibility with main.py.
+    Prefer calling get_vessel_attribution() directly for new code.
+    """
+    origin = {"latitude": latitude, "longitude": longitude}
 
-        # Calculate overall suspicion score
-        score = calculate_suspicion_score(
-            vessel["proximity"],
-            vessel["timing"],
-            vessel["trajectory"],
-            vessel["heading"],
-            vessel["ais_anomaly"]
-        )
+    if spill_time is None:
+        # No spill time was supplied by the caller (older integration) --
+        # fall back to the synthetic dataset's mock spill time so the
+        # pipeline still runs deterministically end-to-end.
+        from data.synthetic_ais import MOCK_SPILL_TIME
+        spill_time = MOCK_SPILL_TIME
 
-        # Generate explanations dynamically
-        reasons = []
-
-        if vessel["proximity"] >= 70:
-            reasons.append("close to estimated origin")
-
-        if vessel["timing"] >= 70:
-            reasons.append("within estimated spill time window")
-
-        if vessel["trajectory"] >= 70:
-            reasons.append("trajectory is consistent with spill drift")
-
-        if vessel["heading"] >= 70:
-            reasons.append("heading is consistent with spill location")
-
-        if vessel["ais_anomaly"] >= 70:
-            reasons.append("AIS anomaly detected near estimated spill time")
-
-        results.append({
-            "id": vessel["id"],
-            "score": score,
-            "reasons": reasons
-        })
-
-    # Highest suspicion first
-    results.sort(
-        key=lambda vessel: vessel["score"],
-        reverse=True
+    result = get_vessel_attribution(
+        origin=origin,
+        spill_time=spill_time,
+        ais_data=ais_data,
+        uncertainty_km=uncertainty_km,
     )
 
-    return results
+    return to_vessel_result_dicts(result["vessels"])
