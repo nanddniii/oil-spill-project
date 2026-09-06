@@ -1,0 +1,247 @@
+.map-container-wrapper {
+  position: relative;     
+  flex: 1;                
+  height: 100%;
+  background-color: #06080b;  
+  display: flex;
+  flex-direction: column;
+  
+}
+
+#map {
+  width: 100%;
+  flex: 1;                
+  background: #0a0c10;    
+  z-index: 1;             
+}
+
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: #0a0c10 !important;  
+}
+
+
+.leaflet-bar {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;    
+  overflow: hidden;
+}
+
+
+.leaflet-bar a, .leaflet-bar a:hover {
+  background-color: var(--panel-bg) !important;  
+  color: var(--text-main) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  width: 28px !important;
+  height: 28px !important;
+  line-height: 28px !important;
+}
+
+
+.leaflet-bar a:hover {
+  background-color: var(--panel-bg-hover) !important;
+  color: var(--accent-cyan) !important;
+}
+
+/* Attribution text (bottom-right: "© OpenStreetMap contributors") */
+.leaflet-control-attribution {
+  background-color: rgba(10, 12, 16, 0.85) !important;  /* Semi-transparent dark */
+  color: var(--text-dim) !important;
+  font-family: var(--font-mono);
+  font-size: 9px !important;
+  border-top: 1px solid var(--border-color);
+  padding: 2px 6px !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--text-muted) !important;
+}
+
+
+
+
+
+
+.map-layer-control {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 500;             
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  padding: 10px 12px;
+  min-width: 190px;
+}
+
+.layer-control-title {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.layer-toggle-item {
+    font-family: var(--font-sans);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.04em;
+  /* text-transform: uppercase; */
+  margin-bottom: 6px;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-main);
+  cursor: pointer;
+  user-select: none;        
+}
+
+.layer-toggle-item:last-child {
+  margin-bottom: 0;
+}
+
+.layer-toggle-item input[type="checkbox"] {
+  appearance: none;         /* Hide default checkbox */
+  width: 13px;
+  height: 13px;
+  background-color: var(--bg-dark);
+  border: 1px solid rgb(108, 108, 108);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+}
+.layer-toggle-item input[type="checkbox"]:checked {
+  background-color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+}
+
+.layer-toggle-item input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 3px;
+  width: 5px;
+  height: 7px;
+  border: solid #000;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.layer-color-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 1px;
+  display: inline-block;
+}
+
+.color-spill { background-color: var(--warning-amber); border: 1px solid var(--warning-amber); }
+
+.color-origin { background-color: transparent; border: 1px dashed #ffffff; }
+
+.color-drift { background-color: transparent; border: 1px dashed var(--accent-cyan); }
+
+.color-vessels { background-color: #0062ff; border: 1px solid #0062ff; }
+
+.vessel-marker-icon {
+  transition: transform 0.2s ease;
+}
+
+
+.vessel-marker-svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+
+.leaflet-popup-content-wrapper {
+  background-color: var(--bg-dark) !important;  
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;    
+  padding: 0 !important;
+}
+
+
+.leaflet-popup-tip {
+  background-color: var(--bg-dark) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: none !important;
+}
+
+
+.vessel-popup {
+  padding: 10px 12px;
+  min-width: 190px;
+}
+
+
+.popup-header {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.popup-badge {
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+/* High suspicion: red */
+.popup-badge.badge-high {
+  background-color: rgb(0, 0, 0);
+  color: green;
+  border: 1px solid green;
+}
+
+
+.popup-badge.badge-med {
+  background-color: var(--warning-amber-subtle);
+  color: var(--warning-amber);
+  border: 1px solid var(--warning-amber);
+}
+
+/* Low suspicion: teal */
+.popup-badge.badge-low {
+  background-color: var(--accent-cyan--subtle);
+  color: var(--accent-cyan);
+  border: 1px solid var(--accent-cyan);
+} 
+
+/* Popup data rows (label: value) */
+.popup-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-bottom: 3px;
+}
+
+.popup-row:last-child {
+  margin-bottom: 0;
+}
+
+.popup-label {
+  color: var(--text-main);
+}
+
+.popup-val {
+  font-family: var(--font-sans);
+  color: var(--text-main);
+}
