@@ -1,0 +1,16 @@
+{
+  "name": "oil-spill-project",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node frontend/server.js",
+    "dev": "nodemon frontend/server.js"
+  },
+  "dependencies": {
+    
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
