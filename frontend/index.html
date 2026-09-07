@@ -87,6 +87,34 @@
 
                         <section class="panel-box">
                             <div class="panel-header">
+                                <span class="panel-title">New Investigation</span>
+                            </div>
+                            <div class="panel-body">
+                                <form id="investigation-form">
+                                    <div class="data-row">
+                                        <label class="data-label" for="investigation-latitude">LATITUDE</label>
+                                        <input id="investigation-latitude" name="latitude" type="number" step="any" required>
+                                    </div>
+                                    <div class="data-row">
+                                        <label class="data-label" for="investigation-longitude">LONGITUDE</label>
+                                        <input id="investigation-longitude" name="longitude" type="number" step="any" required>
+                                    </div>
+                                    <div class="data-row">
+                                        <label class="data-label" for="investigation-timestamp">TIMESTAMP</label>
+                                        <input id="investigation-timestamp" name="timestamp" type="datetime-local" required>
+                                    </div>
+                                    <div class="data-row">
+                                        <label class="data-label" for="investigation-image">SAR IMAGE</label>
+                                        <input id="investigation-image" name="image" type="file" accept="image/*,.tif,.tiff" required>
+                                    </div>
+                                    <button id="investigate-button" type="submit">Investigate</button>
+                                    <div id="investigation-status" role="status" aria-live="polite"></div>
+                                </form>
+                            </div>
+                        </section>
+
+                        <section class="panel-box">
+                            <div class="panel-header">
                                 <span class="panel-title">Incident Metadata</span>
                             </div>
                             <div class="panel-body">
