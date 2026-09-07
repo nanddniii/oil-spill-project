@@ -144,27 +144,42 @@ function adaptInvestigationResponse(response, imageName) {
 function adaptVessel(vessel) {
   const breakdown = vessel.score_breakdown || {};
   const anomaly = Array.isArray(vessel.ais_anomalies) && vessel.ais_anomalies.length > 0;
+  const position = vessel.position && {
+    lat: Number(vessel.position.latitude),
+    lng: Number(vessel.position.longitude)
+  };
+  const trackHistory = Array.isArray(vessel.track_history)
+    ? vessel.track_history.map((point) => [
+      Number(point.latitude),
+      Number(point.longitude)
+    ])
+    : [];
 
   return {
     id: vessel.id || vessel.mmsi,
     mmsi: vessel.mmsi || vessel.id,
-    name: vessel.name || 'Unknown vessel',
+    name: vessel.name,
     flagCode: '',
-    type: 'Unknown',
-    speedKnots: 'Unavailable',
-    suspicionScore: Number(vessel.score || 0),
+    type: vessel.vessel_type || '',
+    speedKnots: vessel.speed_knots ?? '',
+    position,
+    heading: vessel.heading,
+    trackHistory,
+    distanceKm: vessel.distance_km,
+    timeDifferenceMinutes: vessel.time_difference_minutes,
+    riskLevel: vessel.risk_level,
+    confidence: vessel.confidence,
+    suspicionScore: Number(vessel.score),
     explanation: Array.isArray(vessel.reasons) ? vessel.reasons.join('. ') : '',
     scoreBreakdown: {
-      proximityScore: breakdown.distance || 0,
-      trajectoryMatchScore: vessel.trajectory_alignment
-        ? Number(vessel.trajectory_alignment) * 100
-        : 0,
+      proximityScore: breakdown.distance,
+      trajectoryMatchScore: Number(vessel.trajectory_alignment) * 100,
       aisGapDetected: anomaly,
       aisGapDurationMins: anomaly
         ? Math.max(...vessel.ais_anomalies.map((gap) => Number(gap.gap_duration_minutes || 0)))
         : 0,
       speedAnomalyDetected: false,
-      speedDropKnots: 'Unavailable'
+      speedDropKnots: ''
     }
   };
 }
@@ -175,7 +190,8 @@ function hasMapTrack(vessel) {
     Number.isFinite(vessel.position.lat) &&
     Number.isFinite(vessel.position.lng) &&
     Array.isArray(vessel.trackHistory) &&
-    vessel.trackHistory.length > 0
+    vessel.trackHistory.length > 0 &&
+    vessel.trackHistory.every(([lat, lng]) => Number.isFinite(lat) && Number.isFinite(lng))
   );
 }
 

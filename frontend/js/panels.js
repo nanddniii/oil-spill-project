@@ -80,6 +80,13 @@ function renderCandidateList(candidates) {
     
     
     const scoreColorClass = isHigh ? 'text-red' : (isMed ? 'text-amber' : 'text-cyan');
+    const score = vessel.suspicionScore;
+    const distance = vessel.distanceKm ?? '-';
+    const risk = vessel.riskLevel ?? '-';
+    const confidence = vessel.confidence != null
+      ? `${Math.round(vessel.confidence * 100)}%`
+      : '-';
+    const heading = vessel.heading ?? '-';
 
     // Create the card DOM element
     const card = document.createElement('div');
@@ -98,7 +105,7 @@ function renderCandidateList(candidates) {
           </span>
           <!-- Suspicion score badge (colored by risk level) -->
           <span class="vessel-score-badge ${scoreColorClass}">
-            ${vessel.suspicionScore}/100
+            ${score}/100
           </span>
         </div>
         
@@ -106,9 +113,9 @@ function renderCandidateList(candidates) {
         <div class="vessel-meta">
           <span>MMSI: ${vessel.mmsi}</span>
           <span>•</span>
-          <span>${vessel.type}</span>
+          <span>${distance} km</span>
           <span>•</span>
-          <span>${vessel.speedKnots} kn</span>
+          <span>Risk: ${risk}</span>
         </div>
         
         <!-- Score bar — proportional visual representation of suspicion score -->
@@ -130,6 +137,14 @@ function renderCandidateList(candidates) {
           <div class="factor-item">
             <span class="factor-label">Trajectory match</span>
             <span class="factor-val">${vessel.scoreBreakdown.trajectoryMatchScore}%</span>
+          </div>
+          <div class="factor-item">
+            <span class="factor-label">Confidence</span>
+            <span class="factor-val">${confidence}</span>
+          </div>
+          <div class="factor-item">
+            <span class="factor-label">Heading</span>
+            <span class="factor-val">${heading}°</span>
           </div>
           <div class="factor-item">
             <span class="factor-label">AIS signal gap</span>

@@ -310,6 +310,19 @@ def get_vessel_attribution(origin: dict, spill_time, ais_data: list = None,
         ranked_vessels.append({
             "mmsi": mmsi,
             "name": records[0].get("vessel_name", "UNKNOWN"),
+            "position": {
+                "latitude": records[-1]["latitude"],
+                "longitude": records[-1]["longitude"],
+            },
+            "heading": records[-1].get("heading"),
+            "track_history": [
+                {
+                    "latitude": record["latitude"],
+                    "longitude": record["longitude"],
+                    "timestamp": record["timestamp"].isoformat(),
+                }
+                for record in records
+            ],
             "score": result["score"],
             "risk_level": result["risk_level"],
             "confidence": confidence,
