@@ -4,6 +4,7 @@ import { fetchIncidentData } from './mockdata.js';
 import { initMap } from './map.js';
 
 import { renderVesselPanel } from './panels.js';
+import { renderForensicReport, setupReportActions } from './report.js';
 
 
 let currentIncidentData = null;
@@ -13,6 +14,8 @@ const INVESTIGATE_ENDPOINT = 'http://127.0.0.1:8000/api/investigate';
 document.addEventListener('DOMContentLoaded', () => {
   initializeApp();
   setupInvestigationForm();
+  setupNavigation();
+  setupReportActions();
 });
 
 
@@ -22,6 +25,10 @@ async function initializeApp() {
 //   setupNavigation();
 
   await loadIncident('SAR-2026-0881');
+
+  if (window.location.pathname === '/forensic-report') {
+    document.getElementById('nav-report')?.click();
+  }
 
 //   await loadIncidentArchive();
 }
@@ -39,6 +46,7 @@ async function loadIncident(incidentId) {
     initMap('map', data);
 
     renderVesselPanel(data);
+    renderForensicReport(data);
 
 
   } catch (err) {
@@ -103,6 +111,7 @@ function setupInvestigationForm() {
       };
       initMap('map', mapData);
       renderVesselPanel(adaptedData);
+      renderForensicReport(adaptedData);
       setRequestStatus(status, 'Investigation complete.', false);
     } catch (error) {
       console.error('Investigation request failed:', error);
@@ -173,6 +182,7 @@ function adaptVessel(vessel) {
     name: vessel.name,
     flagCode: '',
     type: vessel.vessel_type || '',
+    movementDirection: vessel.movement_direction || '',
     speedKnots: vessel.speed_knots ?? '',
     position,
     heading: vessel.heading,
@@ -182,9 +192,17 @@ function adaptVessel(vessel) {
     riskLevel: vessel.risk_level,
     confidence: vessel.confidence,
     suspicionScore: Number(vessel.score),
+    reasons: Array.isArray(vessel.reasons) ? vessel.reasons : [],
     explanation: Array.isArray(vessel.reasons) ? vessel.reasons.join('. ') : '',
     scoreBreakdown: {
       proximityScore: breakdown.distance,
+      distanceScore: breakdown.distance_component ?? breakdown.distance,
+      timeScore: breakdown.time_component ?? breakdown.time,
+      trajectoryScore: breakdown.trajectory_component ?? Number(vessel.trajectory_alignment) * 100,
+      presenceScore: breakdown.presence_component ?? breakdown.presence,
+      aisAnomalyScore: breakdown.anomaly_component ?? breakdown.anomaly,
+      speedScore: breakdown.speed_component ?? breakdown.speed,
+      vesselTypeScore: breakdown.vessel_type_component ?? breakdown.vessel_type,
       trajectoryMatchScore: Number(vessel.trajectory_alignment) * 100,
       aisGapDetected: anomaly,
       aisGapDurationMins: anomaly
@@ -194,6 +212,27 @@ function adaptVessel(vessel) {
       speedDropKnots: ''
     }
   };
+}
+
+function setupNavigation() {
+  document.querySelectorAll('.nav-item[data-view]').forEach((item) => {
+    item.addEventListener('click', () => {
+      const viewId = item.dataset.view;
+      document.querySelectorAll('.app-view').forEach((view) => {
+        view.classList.toggle('active', view.id === viewId);
+      });
+      document.querySelectorAll('.nav-item').forEach((navItem) => {
+        navItem.classList.toggle('active', navItem === item);
+      });
+
+      if (viewId === 'view-report' && currentIncidentData) {
+        renderForensicReport(currentIncidentData);
+      }
+      if (viewId === 'view-dashboard' && currentIncidentData) {
+        initMap('map', currentIncidentData);
+      }
+    });
+  });
 }
 
 function hasMapTrack(vessel) {

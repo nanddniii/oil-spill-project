@@ -47,6 +47,9 @@ class VesselResult(BaseModel):
     position: Optional[Position] = None
     track_history: Optional[List[TrackPoint]] = None
     heading: Optional[float] = None
+    vessel_type: Optional[str] = None
+    movement_direction: Optional[str] = None
+    speed_knots: Optional[float] = None
 
     # --- Member 3 additions (all optional so older callers/tests still validate) ---
 

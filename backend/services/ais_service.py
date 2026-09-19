@@ -32,6 +32,9 @@ def to_vessel_result_dicts(raw_vessels: list) -> list:
             "name": v.get("name") or f"Unknown Vessel ({v['mmsi']})",
             "position": v.get("position"),
             "heading": v.get("heading"),
+            "vessel_type": v.get("vessel_type"),
+            "movement_direction": v.get("movement_direction"),
+            "speed_knots": v.get("speed"),
             "track_history": v.get("track_history"),
             "score": v["score"],
             "reasons": v["reasons"],
@@ -41,7 +44,13 @@ def to_vessel_result_dicts(raw_vessels: list) -> list:
             "time_difference_minutes": v["time_difference_minutes"],
             "trajectory_alignment": v["trajectory_alignment"],
             "ais_anomalies": v["ais_anomalies"],
-            "score_breakdown": v["score_breakdown"],
+            "score_breakdown": {
+                **v.get("score_breakdown", {}),
+                **{
+                    f"{key}_component": value
+                    for key, value in v.get("component_scores", {}).items()
+                },
+            },
         }
         for v in raw_vessels
     ]
