@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Daemon</title>
+    <title>Oil Spill Detection â€” Team Daemon</title>
+    <meta name="description" content="SAR-based oil spill detection, origin reconstruction, AIS correlation and drift forecasting system.">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/map.css">
@@ -20,32 +24,37 @@
                 <svg class="logo-svg" viewBox="0 0 24 24"><path d="M12 2C8 6 5 10 5 14a7 7 0 0 0 14 0c0-4-3-8-7-12z"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
                 <span class="project-title">OIL SPILL DETECTION</span>
             </div>
-            <nav class="nav-links">
-                <button class="nav-item active" data-view="view-dashboard" id="nav-dashboard">
-                <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                Dashboard
-                </button>
-                <button class="nav-item " data-view="view-incidents" id="nav-incidents">
-                <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-                Incidents Archive
-                </button>
-                <button class="nav-item " data-view="view-report" id="nav-report">
-                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                Forensic Report
-                </button>
-                <button class="nav-item" data-view="view-about" id="nav-about">
-                <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                System Info
-                </button>
-            </nav>
-        
+            <div class="nav-right">
+                <nav class="nav-links">
+                    <button class="nav-item active" data-view="view-dashboard" id="nav-dashboard">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    Dashboard
+                    </button>
+                    <button class="nav-item" data-view="view-incidents" id="nav-incidents">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                    Archive
+                    </button>
+                    <button class="nav-item" data-view="view-report" id="nav-report">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    Forensic Report
+                    </button>
+                    <button class="nav-item" data-view="view-sysinfo" id="nav-about">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    System Info
+                    </button>
+                </nav>
+                <div class="nav-status-badge">
+                    <span class="status-dot"></span>
+                    <span class="status-text">LIVE</span>
+                </div>
+            </div>
         </header>
         <main id="view-dashboard" class="app-view active">
             <div class="dashboard-layout">
 
                 <div class="map-container-wrapper">
                     <div class="map-layer-control">
-                        <div class="layer-control-title">Overlays</div>
+                        <div class="layer-control-title">Map Overlays</div>
                         
                         <label class="layer-toggle-item">
                         <input type="checkbox" id="toggle-spill" checked>
@@ -132,7 +141,7 @@
 
                         <section class="panel-box">
                             <div class="panel-header">
-                                <span class="panel-title">Candidate Vessels</span>
+                                <span class="panel-title panel-title-cyan-bar">CANDIDATE VESSELS</span>
                             </div>
                             <div class="panel-body">
                                 
@@ -158,12 +167,212 @@
             </div>
         </main>
 
+        <!-- ========== INCIDENTS ARCHIVE VIEW ========== -->
+        <main id="view-incidents" class="app-view">
+            <div class="page-layout archive-page-layout">
+                <div class="archive-header">
+                    <h1 class="archive-title">Incident Archive</h1>
+                    <p class="archive-subtitle">Historical SAR-detected oil spill incidents with forensic analysis records.</p>
+                    <div class="archive-cyan-bar"></div>
+                </div>
+                <div class="incident-archive-list" id="incident-archive-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </main>
 
+        <!-- ========== FORENSIC REPORT VIEW ========== -->
+        <main id="view-report" class="app-view">
+            <div class="page-layout rpt-page-layout">
+                <div class="report-body" id="report-body">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </main>
 
+        <!-- ========== SYSTEM INFO VIEW ========== -->
+        <main id="view-sysinfo" class="app-view">
+            <div class="page-layout sysinfo-layout">
 
+                <div class="page-header">
+                    <h1 class="page-heading">System Information</h1>
+                    <p class="page-subheading">Architecture and data pipeline used by this SAR oil-spill detection system.</p>
+                </div>
 
+                <!-- Pipeline section -->
+                <div class="sysinfo-section">
+                    <h2 class="sysinfo-section-title">System Pipeline</h2>
+                    <p class="sysinfo-section-desc">Seven sequential stages are executed for each SAR image submitted to the system.</p>
 
+                    <div class="pipeline-flow">
 
+                        <div class="pipeline-node">
+                            <div class="pipeline-node-left">
+                                <div class="pipeline-node-badge">01</div>
+                                <div class="pipeline-node-line"></div>
+                            </div>
+                            <div class="pipeline-node-card">
+                                <div class="pipeline-node-tag">INPUT</div>
+                                <div class="pipeline-node-name">SAR Detection</div>
+                                <div class="pipeline-node-desc">Processes the uploaded Synthetic Aperture Radar (SAR) image to identify pixel regions with backscatter signatures characteristic of surface oil films. A threshold-based segmentation approach extracts the candidate spill mask.</div>
+                                <div class="pipeline-node-outputs">
+                                    <span class="pipeline-chip">Spill mask</span>
+                                    <span class="pipeline-chip">Confidence score</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pipeline-node">
+                            <div class="pipeline-node-left">
+                                <div class="pipeline-node-badge">02</div>
+                                <div class="pipeline-node-line"></div>
+                            </div>
+                            <div class="pipeline-node-card">
+                                <div class="pipeline-node-tag">GEOMETRY</div>
+                                <div class="pipeline-node-name">Spill Geometry</div>
+                                <div class="pipeline-node-desc">Computes the spatial extent and shape of the detected spill mask: total area (kmÂ²), a polygon boundary, and centroid coordinates. This geometry is used by all downstream stages.</div>
+                                <div class="pipeline-node-outputs">
+                                    <span class="pipeline-chip">Area (kmÂ²)</span>
+                                    <span class="pipeline-chip">Polygon</span>
+                                    <span class="pipeline-chip">Centroid</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pipeline-node">
+                            <div class="pipeline-node-left">
+                                <div class="pipeline-node-badge">03</div>
+                                <div class="pipeline-node-line"></div>
+                            </div>
+                            <div class="pipeline-node-card">
+                                <div class="pipeline-node-tag">ESTIMATION</div>
+                                <div class="pipeline-node-name">Oil Quantity Estimate</div>
+                                <div class="pipeline-node-desc">Estimates the approximate quantity of oil from the detected spill area and a range of assumed film thickness values (thin sheen to emulsified slick). Output is a volume range (mÂ³) and mass range (tonnes).</div>
+                                <div class="pipeline-node-outputs">
+                                    <span class="pipeline-chip">Volume range (mÂ³)</span>
+                                    <span class="pipeline-chip text-amber">Estimate only</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pipeline-node">
+                            <div class="pipeline-node-left">
+                                <div class="pipeline-node-badge">04</div>
+                                <div class="pipeline-node-line"></div>
+                            </div>
+                            <div class="pipeline-node-card">
+                                <div class="pipeline-node-tag">RECONSTRUCTION</div>
+                                <div class="pipeline-node-name">Origin Reconstruction</div>
+                                <div class="pipeline-node-desc">Applies a Lagrangian back-propagation model to the spill centroid, using wind and current parameters to reverse-trace the drift trajectory and estimate a probable source region and time window.</div>
+                                <div class="pipeline-node-outputs">
+                                    <span class="pipeline-chip">Origin point</span>
+                                    <span class="pipeline-chip">Uncertainty radius</span>
+                                    <span class="pipeline-chip">Time window</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pipeline-node">
+                            <div class="pipeline-node-left">
+                                <div class="pipeline-node-badge">05</div>
+                                <div class="pipeline-node-line"></div>
+                            </div>
+                            <div class="pipeline-node-card">
+                                <div class="pipeline-node-tag">AIS</div>
+                                <div class="pipeline-node-name">AIS Correlation</div>
+                                <div class="pipeline-node-desc">Cross-references the reconstructed origin region and time window against synthetic AIS vessel tracks. Vessels whose tracks intersect the origin window are flagged as candidates.</div>
+                                <div class="pipeline-node-outputs">
+                                    <span class="pipeline-chip">Candidate vessels</span>
+                                    <span class="pipeline-chip text-amber">Synthetic AIS data</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pipeline-node">
+                            <div class="pipeline-node-left">
+                                <div class="pipeline-node-badge">06</div>
+                                <div class="pipeline-node-line"></div>
+                            </div>
+                            <div class="pipeline-node-card">
+                                <div class="pipeline-node-tag">SCORING</div>
+                                <div class="pipeline-node-name">Candidate Ranking</div>
+                                <div class="pipeline-node-desc">Scores each candidate vessel (0â€“100) based on a weighted combination of: proximity to reconstructed origin, trajectory alignment with drift vector, AIS signal gaps, and vessel type risk profile.</div>
+                                <div class="pipeline-node-outputs">
+                                    <span class="pipeline-chip">Ranked candidates</span>
+                                    <span class="pipeline-chip">Score breakdown</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pipeline-node pipeline-node-last">
+                            <div class="pipeline-node-left">
+                                <div class="pipeline-node-badge pipeline-node-badge-last">07</div>
+                            </div>
+                            <div class="pipeline-node-card">
+                                <div class="pipeline-node-tag">FORECAST</div>
+                                <div class="pipeline-node-name">Drift / Forecast</div>
+                                <div class="pipeline-node-desc">Projects the current spill boundary forward in time using the same drift model (wind and surface current vectors) to produce a +6 h predicted spread polygon. Rendered on the map as a dashed overlay.</div>
+                                <div class="pipeline-node-outputs">
+                                    <span class="pipeline-chip">+6h spread polygon</span>
+                                    <span class="pipeline-chip">Map overlay</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Tech stack -->
+                <div class="sysinfo-section">
+                    <h2 class="sysinfo-section-title">Technology Notes</h2>
+                    <div class="sysinfo-tech-grid">
+                        <div class="sysinfo-tech-item">
+                            <span class="tech-label">SAR Source</span>
+                            <span class="tech-value">Sentinel-1 (demonstration)</span>
+                        </div>
+                        <div class="sysinfo-tech-item">
+                            <span class="tech-label">Drift Model</span>
+                            <span class="tech-value">Lagrangian back-propagation</span>
+                        </div>
+                        <div class="sysinfo-tech-item">
+                            <span class="tech-label">AIS Data</span>
+                            <span class="tech-value">Synthetic demonstration data</span>
+                        </div>
+                        <div class="sysinfo-tech-item">
+                            <span class="tech-label">Oil Quantity Method</span>
+                            <span class="tech-value">Area Ã— assumed film thickness</span>
+                        </div>
+                        <div class="sysinfo-tech-item">
+                            <span class="tech-label">Backend</span>
+                            <span class="tech-value">Python / FastAPI</span>
+                        </div>
+                        <div class="sysinfo-tech-item">
+                            <span class="tech-label">Frontend</span>
+                            <span class="tech-value">HTML / Vanilla JS / Leaflet</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DATA & ASSUMPTIONS box -->
+                <div class="sysinfo-assumptions-box">
+                    <div class="sysinfo-assumptions-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        DATA &amp; ASSUMPTIONS
+                    </div>
+                    <div class="sysinfo-assumptions-items">
+                        <div class="sysinfo-assumption-item">
+                            <span class="assumption-key">AIS source:</span>
+                            <span class="assumption-val">Synthetic demonstration data â€” vessel tracks are not sourced from real-time or historical AIS feeds and are generated for demonstration purposes only.</span>
+                        </div>
+                        <div class="sysinfo-assumption-item">
+                            <span class="assumption-key">Oil quantity:</span>
+                            <span class="assumption-val">Estimated from detected spill area and a range of assumed film thickness values. Not a direct measurement.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
 
     </div>
 

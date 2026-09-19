@@ -90,49 +90,49 @@ function renderCandidateList(candidates) {
   container.innerHTML = '';
 
   
-  sorted.forEach(vessel => {
+  sorted.forEach((vessel, idx) => {
     
     const isHigh = vessel.suspicionScore >= 70;
     const isMed = vessel.suspicionScore >= 40 && vessel.suspicionScore < 70;
     
-    
     const barColorClass = isHigh ? 'score-red' : (isMed ? 'score-amber' : 'score-teal');
-    
-    
     const borderClass = isHigh ? 'high-suspicion' : (isMed ? 'med-suspicion' : 'low-suspicion');
-    
-    
     const scoreColorClass = isHigh ? 'text-red' : (isMed ? 'text-amber' : 'text-cyan');
+    
     const score = vessel.suspicionScore;
-    const distance = vessel.distanceKm ?? '-';
-    const risk = vessel.riskLevel ?? '-';
+    const distance = vessel.distanceKm != null ? vessel.distanceKm : '-';
+    const risk = vessel.riskLevel || '-';
     const confidence = vessel.confidence != null
       ? `${Math.round(vessel.confidence * 100)}%`
       : '-';
-    const heading = vessel.heading ?? '-';
+    const heading = vessel.heading != null ? `${vessel.heading}°` : '-';
 
     // Create the card DOM element
     const card = document.createElement('div');
-    card.className = `vessel-card ${borderClass}`;  
-    card.id = `vessel-card-${vessel.id}`;           // Unique ID for targeting
+    // Top candidate expanded and active by default to match dashboard view
+    const isDefaultExpanded = idx === 0;
+    card.className = `vessel-card ${borderClass}${isDefaultExpanded ? ' expanded active' : ''}`;  
+    card.id = `vessel-card-${vessel.id}`;
 
-    // Fill the card with HTML content
+    if (isDefaultExpanded && !activeSelectedVesselId) {
+      activeSelectedVesselId = vessel.id;
+    }
+
+    // Fill the card with HTML content matching screenshot 3
     card.innerHTML = `
       <!-- Main visible section (always shown) -->
       <div class="vessel-card-main">
         <div class="vessel-card-header">
-          <!-- Vessel name + flag code -->
-          <span class="vessel-name">
-            ${vessel.name}
-            <span class="text-dim" style="font-size: 10px; font-weight: normal;">${vessel.flagCode}</span>
-          </span>
-          <!-- Suspicion score badge (colored by risk level) -->
+          <div class="vessel-name-wrap">
+            <span class="vessel-name">${vessel.name}</span>
+            <span class="vessel-flag-badge">${vessel.flagCode}</span>
+          </div>
           <span class="vessel-score-badge ${scoreColorClass}">
             ${score}/100
           </span>
         </div>
         
-        <!-- Vessel metadata line (MMSI, type, speed) -->
+        <!-- Vessel metadata line -->
         <div class="vessel-meta">
           <span>MMSI: ${vessel.mmsi}</span>
           <span>•</span>
@@ -141,7 +141,7 @@ function renderCandidateList(candidates) {
           <span>Risk: ${risk}</span>
         </div>
         
-        <!-- Score bar — proportional visual representation of suspicion score -->
+        <!-- Full-width score progress bar -->
         <div class="score-bar-wrapper">
           <div class="score-bar-bg">
             <div class="score-bar-fill ${barColorClass}" style="width: ${vessel.suspicionScore}%;"></div>
@@ -149,42 +149,40 @@ function renderCandidateList(candidates) {
         </div>
       </div>
 
-      <!-- Expandable details section (shown when card is clicked) -->
+      <!-- Expandable details section (2x3 grid + explanation) -->
       <div class="vessel-card-details">
-        <!-- 2x2 grid of scoring factors -->
         <div class="factor-grid">
           <div class="factor-item">
-            <span class="factor-label">Proximity Index</span>
+            <span class="factor-label">PROXIMITY INDEX</span>
             <span class="factor-val">${vessel.scoreBreakdown.proximityScore}%</span>
           </div>
           <div class="factor-item">
-            <span class="factor-label">Trajectory match</span>
+            <span class="factor-label">TRAJECTORY MATCH</span>
             <span class="factor-val">${vessel.scoreBreakdown.trajectoryMatchScore}%</span>
           </div>
           <div class="factor-item">
-            <span class="factor-label">Confidence</span>
+            <span class="factor-label">CONFIDENCE</span>
             <span class="factor-val">${confidence}</span>
           </div>
           <div class="factor-item">
-            <span class="factor-label">Heading</span>
-            <span class="factor-val">${heading}°</span>
+            <span class="factor-label">HEADING</span>
+            <span class="factor-val">${heading}</span>
           </div>
           <div class="factor-item">
-            <span class="factor-label">AIS signal gap</span>
-            <!-- flag-alert = red badge (problem detected), flag-ok = teal badge (no issue) -->
+            <span class="factor-label">AIS SIGNAL GAP</span>
             <span class="flag-tag ${vessel.scoreBreakdown.aisGapDetected ? 'flag-alert' : 'flag-ok'}">
               ${vessel.scoreBreakdown.aisGapDetected ? 'Detected (' + vessel.scoreBreakdown.aisGapDurationMins + 'm)' : 'None'}
             </span>
           </div>
           <div class="factor-item">
-            <span class="factor-label">Speed change</span>
+            <span class="factor-label">SPEED CHANGE</span>
             <span class="flag-tag ${vessel.scoreBreakdown.speedAnomalyDetected ? 'flag-alert' : 'flag-ok'}">
               ${vessel.scoreBreakdown.speedAnomalyDetected ? 'Flagged' : 'Normal'}
             </span>
           </div>
         </div>
         
-        <!-- Plain-English explanation of why this vessel is suspicious -->
+        <!-- Explanation of vessel suspicion -->
         <div class="vessel-explanation">
           ${vessel.explanation}
         </div>

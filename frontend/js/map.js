@@ -70,6 +70,11 @@ predictionLayerGroup.addTo(mapInstance);
   
   setupLayerToggles();
 
+  setTimeout(() => {
+    if (mapInstance) {
+      mapInstance.invalidateSize();
+    }
+  }, 100);
 }
 
 
@@ -366,4 +371,17 @@ export function resetMapHighlights() {
   if (!currentIncident) return;
   // Re-render all layers (restores original styles)
   renderIncidentLayers(currentIncident);
+}
+
+export function invalidateMapSize() {
+  if (mapInstance) {
+    setTimeout(() => {
+      if (mapInstance) {
+        mapInstance.invalidateSize();
+        if (currentIncident && currentIncident.centerCoords) {
+          mapInstance.panTo([currentIncident.centerCoords.lat, currentIncident.centerCoords.lng]);
+        }
+      }
+    }, 80);
+  }
 }
