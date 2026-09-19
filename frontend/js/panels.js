@@ -151,43 +151,33 @@ function renderCandidateList(candidates) {
 
       <!-- Expandable details section (shown when card is clicked) -->
       <div class="vessel-card-details">
-        <!-- 2x2 grid of scoring factors -->
-        <div class="factor-grid">
-          <div class="factor-item">
-            <span class="factor-label">Proximity Index</span>
-            <span class="factor-val">${vessel.scoreBreakdown.proximityScore}%</span>
-          </div>
-          <div class="factor-item">
-            <span class="factor-label">Trajectory match</span>
-            <span class="factor-val">${vessel.scoreBreakdown.trajectoryMatchScore}%</span>
-          </div>
-          <div class="factor-item">
-            <span class="factor-label">Confidence</span>
-            <span class="factor-val">${confidence}</span>
-          </div>
-          <div class="factor-item">
-            <span class="factor-label">Heading</span>
-            <span class="factor-val">${heading}°</span>
-          </div>
-          <div class="factor-item">
-            <span class="factor-label">AIS signal gap</span>
-            <!-- flag-alert = red badge (problem detected), flag-ok = teal badge (no issue) -->
-            <span class="flag-tag ${vessel.scoreBreakdown.aisGapDetected ? 'flag-alert' : 'flag-ok'}">
-              ${vessel.scoreBreakdown.aisGapDetected ? 'Detected (' + vessel.scoreBreakdown.aisGapDurationMins + 'm)' : 'None'}
-            </span>
-          </div>
-          <div class="factor-item">
-            <span class="factor-label">Speed change</span>
-            <span class="flag-tag ${vessel.scoreBreakdown.speedAnomalyDetected ? 'flag-alert' : 'flag-ok'}">
-              ${vessel.scoreBreakdown.speedAnomalyDetected ? 'Flagged' : 'Normal'}
-            </span>
-          </div>
+        <div class="evidence-card-heading">
+          <div><span class="factor-label">Investigation Evidence</span><strong>Source Association Evidence</strong></div>
+          <span class="risk-badge risk-${String(risk).toLowerCase()}">${risk}</span>
         </div>
-        
-        <!-- Plain-English explanation of why this vessel is suspicious -->
-        <div class="vessel-explanation">
-          ${vessel.explanation}
+        <div class="evidence-card-summary">
+          <div><span class="factor-label">Attribution Score</span><strong>${score}/100</strong></div>
+          <div><span class="factor-label">Confidence</span><strong>${confidence}</strong></div>
         </div>
+        <div class="evidence-bars">
+          ${renderEvidenceBar('Distance Score', vessel.scoreBreakdown.distanceScore)}
+          ${renderEvidenceBar('Time Score', vessel.scoreBreakdown.timeScore)}
+          ${renderEvidenceBar('Trajectory Score', vessel.scoreBreakdown.trajectoryScore)}
+          ${renderEvidenceBar('Presence Score', vessel.scoreBreakdown.presenceScore)}
+          ${renderEvidenceBar('AIS Anomaly Score', vessel.scoreBreakdown.aisAnomalyScore)}
+          ${renderEvidenceBar('Speed Score', vessel.scoreBreakdown.speedScore)}
+          ${renderEvidenceBar('Vessel Type Score', vessel.scoreBreakdown.vesselTypeScore)}
+        </div>
+        <div class="evidence-facts">
+          <div><span>Distance from Origin</span><strong>${distance} km</strong></div>
+          <div><span>Time Difference</span><strong>${vessel.timeDifferenceMinutes ?? '-'} minutes</strong></div>
+          <div><span>Trajectory Alignment</span><strong>${vessel.scoreBreakdown.trajectoryScore ?? '-'}%</strong></div>
+          <div><span>Movement Direction</span><strong>${vessel.movementDirection || heading || '-'}</strong></div>
+          <div><span>AIS Anomalies</span><strong>${vessel.scoreBreakdown.aisGapDetected ? `Detected (${vessel.scoreBreakdown.aisGapDurationMins} min)` : 'None'}</strong></div>
+          <div><span>Vessel Type</span><strong>${vessel.type || '-'}</strong></div>
+          <div><span>Speed</span><strong>${vessel.speedKnots === '' ? '-' : `${vessel.speedKnots} knots`}</strong></div>
+        </div>
+        <div class="vessel-explanation"><span class="factor-label">Evidence Reasons</span><ul>${renderReasons(vessel)}</ul></div>
       </div>
     `;
 
@@ -199,6 +189,17 @@ function renderCandidateList(candidates) {
     // Add the card to the container in the DOM
     container.appendChild(card);
   });
+}
+
+function renderEvidenceBar(label, value) {
+  const score = Number.isFinite(Number(value)) ? Math.max(0, Math.min(100, Number(value))) : 0;
+  return `<div class="evidence-bar"><div><span>${label}</span><b>${Number.isFinite(Number(value)) ? Number(value) : '-'}</b></div><div class="evidence-bar-track"><i style="width: ${score}%;"></i></div></div>`;
+}
+
+function renderReasons(vessel) {
+  const reasons = Array.isArray(vessel.reasons) ? vessel.reasons : [];
+  if (reasons.length > 0) return reasons.map(reason => `<li>${reason}</li>`).join('');
+  return vessel.explanation ? `<li>${vessel.explanation}</li>` : '<li>No reasons returned by backend.</li>';
 }
 
 
