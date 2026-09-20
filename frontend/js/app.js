@@ -86,6 +86,7 @@ function showView(viewId) {
 
   if (viewId === 'view-dashboard') refreshMapSize();
   if (viewId === 'view-incidents') refreshIncidentsArchive();
+  if (viewId === 'view-report') refreshForensicReport();
   return true;
 }
 
@@ -412,4 +413,197 @@ function setRequestStatus(element, message, isError) {
   if (!element) return;
   element.textContent = message;
   element.dataset.state = isError ? 'error' : 'normal';
+}
+
+// ---------- Forensic Report ----------
+
+function refreshForensicReport() {
+  const data = currentIncidentData;
+
+  // Update the static header elements
+  const idEl = document.getElementById('report-incident-id');
+  if (idEl) idEl.textContent = data ? `Incident #${data.id}` : '—';
+
+  // Stat cards (always update even if no data)
+  const statConf = document.getElementById('stat-confidence');
+  const statArea = document.getElementById('stat-area');
+  const statOil  = document.getElementById('stat-oil');
+
+  const body = document.getElementById('report-body');
+  if (!body) return;
+
+  if (!data) {
+    if (statConf) statConf.textContent = '—';
+    if (statArea) statArea.textContent = '—';
+    if (statOil)  statOil.textContent  = '—';
+    body.innerHTML = '<p class="report-empty">Run an investigation from the Dashboard to generate a forensic report.</p>';
+    return;
+  }
+
+  const oilQ          = data.oilQuantity || data.oilQuantityEstimate || {};
+  const quantityRange = oilQ.quantity_range_tonnes || {};
+  const thicknessRange= oilQ.thickness_range_microns || {};
+  const fmtNum = (v, dec = 1) => Number.isFinite(Number(v))
+    ? Number(v).toLocaleString(undefined, { maximumFractionDigits: dec })
+    : '—';
+
+  // Stat cards
+  if (statConf) statConf.textContent = data.detectionConfidence != null ? `${fmtNum(data.detectionConfidence)}%` : '—';
+  if (statArea) statArea.textContent = data.spillAreaKm2 != null ? fmtNum(data.spillAreaKm2, 2) : '—';
+  if (statOil)  statOil.textContent  = fmtNum(oilQ.estimated_quantity_tonnes, 1);
+
+  // Sort candidates
+  const candidates = [...(data.candidates || [])].sort((a, b) => b.suspicionScore - a.suspicionScore);
+  const top = candidates[0] || null;
+
+  // ── Risk colour helpers ──
+  const riskColor = (score) => score >= 70 ? 'red' : score >= 40 ? 'amber' : 'teal';
+  const riskLabel = (score) => score >= 70 ? 'HIGH' : score >= 40 ? 'MEDIUM' : 'LOW';
+
+  // ── Top candidate block ──
+  const topCandidateHTML = top ? (() => {
+    const rc = riskColor(top.suspicionScore);
+    return `
+      <div class="report-top-candidate">
+        <div>
+          <div class="report-top-candidate-label">Top Source-Association Candidate</div>
+          <div class="report-top-candidate-name">${top.name || top.mmsi}</div>
+          <div class="report-top-candidate-meta">MMSI ${top.mmsi} &nbsp;·&nbsp; ${top.type || '—'} &nbsp;·&nbsp; Flag: ${top.flag || top.flagCode || '—'}</div>
+        </div>
+        <div class="report-top-candidate-score">
+          <span class="report-top-score-num score-${rc}">${top.suspicionScore}</span>
+          <span class="report-top-score-denom">&thinsp;/ 100</span>
+          <div><span class="report-top-score-risk risk-${rc}">${riskLabel(top.suspicionScore)}</span></div>
+        </div>
+      </div>`;
+  })() : '';
+
+  // ── Vessel list rows ──
+  const vesselListHTML = candidates.map((v, i) => {
+    const rc = riskColor(v.suspicionScore);
+    const fillClass = rc === 'red' ? 'fill-red' : rc === 'amber' ? 'fill-amber' : 'fill-teal';
+    const topClass  = i === 0 ? (rc === 'amber' ? 'is-top amber-top' : 'is-top') : '';
+    return `
+      <div class="report-vessel-item ${topClass}">
+        <div>
+          <div class="report-vessel-name">${v.name || v.mmsi}</div>
+          <div class="report-score-bar-wrap">
+            <div class="report-score-bar-bg">
+              <div class="report-score-bar-fill ${fillClass}" style="width:${v.suspicionScore}%"></div>
+            </div>
+          </div>
+        </div>
+        <span class="report-vessel-mmsi">MMSI ${v.mmsi}</span>
+        <span class="report-vessel-dist">${v.distanceKm != null ? `${fmtNum(v.distanceKm, 1)} km` : '—'}</span>
+        <span class="report-vessel-score text-${rc}">${v.suspicionScore}/100</span>
+      </div>`;
+  }).join('');
+
+  // ── Drift info ──
+  const hasDrift = Array.isArray(data.driftPath) && data.driftPath.length > 0;
+  const driftHTML = hasDrift
+    ? `<div class="report-grid">
+        <div class="report-field"><span class="report-field-label">Drift Points</span><span class="report-field-value">${data.driftPath.length} waypoints</span></div>
+        <div class="report-field"><span class="report-field-label">Speed</span><span class="report-field-value">${data.driftSpeedKnots != null ? `${data.driftSpeedKnots} kn` : '—'}</span></div>
+        <div class="report-field"><span class="report-field-label">Heading</span><span class="report-field-value">${data.driftHeadingDeg != null ? `${data.driftHeadingDeg}°` : '—'}</span></div>
+        <div class="report-field"><span class="report-field-label">+6h Forecast</span><span class="report-field-value">${data.forecastAvailable ? 'Available' : (data.predictedPolygonGeoJSON ? 'Available' : 'Not computed')}</span></div>
+        <div class="report-field"><span class="report-field-label">Wind Vector</span><span class="report-field-value">${data.windVector || '—'}</span></div>
+      </div>`
+    : '<p class="report-empty" style="padding:12px 0">No drift / forecast data for this incident.</p>';
+
+  // ── Assessment text ──
+  const assessHTML = top
+    ? `<p class="report-assessment-text">
+        Based on SAR acquisition and Lagrangian origin reconstruction, the vessel most spatially and
+        temporally associated with the discharge window is <strong>${top.name || top.mmsi}</strong>
+        (MMSI ${top.mmsi}), with a source-association score of
+        <strong>${top.suspicionScore}/100</strong> (${riskLabel(top.suspicionScore)} risk tier).
+        ${top.explanation ? `${top.explanation}` : ''}
+        This assessment is based on synthetic AIS demonstration data and should not be treated as
+        legal evidence or a confirmed attribution.
+      </p>`
+    : '<p class="report-assessment-text">No candidate vessels were identified for this incident.</p>';
+
+  // ── Compose all sections ──
+  body.innerHTML = `
+    <!-- INCIDENT OVERVIEW -->
+    <div class="report-section">
+      <div class="report-section-header">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Incident Overview
+      </div>
+      <div class="report-section-body">
+        <div class="report-grid">
+          <div class="report-field"><span class="report-field-label">Incident ID</span><span class="report-field-value text-cyan">${data.id}</span></div>
+          <div class="report-field"><span class="report-field-label">Region</span><span class="report-field-value">${data.region || '—'}</span></div>
+          <div class="report-field"><span class="report-field-label">Acquired (UTC)</span><span class="report-field-value">${data.acquiredUtc || '—'}</span></div>
+          <div class="report-field"><span class="report-field-label">SAR Source</span><span class="report-field-value">${data.satellite || '—'}</span></div>
+          <div class="report-field"><span class="report-field-label">Spill Area</span><span class="report-field-value">${fmtNum(data.spillAreaKm2, 2)} km²</span></div>
+          <div class="report-field"><span class="report-field-label">Confidence</span><span class="report-field-value">${fmtNum(data.detectionConfidence)}%</span></div>
+          <div class="report-field"><span class="report-field-label">Est. Quantity</span><span class="report-field-value">${fmtNum(oilQ.estimated_quantity_tonnes)} t &nbsp;<span style="font-size:10px;color:rgb(140,148,160)">(${fmtNum(quantityRange.min)}–${fmtNum(quantityRange.max)} t range)</span></span></div>
+          <div class="report-field"><span class="report-field-label">Thickness Assumption</span><span class="report-field-value">${fmtNum(thicknessRange.min)}–${fmtNum(thicknessRange.max)} µm</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOURCE RECONSTRUCTION -->
+    <div class="report-section">
+      <div class="report-section-header">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>
+        Source Reconstruction
+      </div>
+      <div class="report-section-body">
+        <div class="report-grid">
+          <div class="report-field"><span class="report-field-label">Origin Latitude</span><span class="report-field-value">${data.originPoint?.lat?.toFixed(5) ?? '—'}°</span></div>
+          <div class="report-field"><span class="report-field-label">Origin Longitude</span><span class="report-field-value">${data.originPoint?.lng?.toFixed(5) ?? '—'}°</span></div>
+          <div class="report-field"><span class="report-field-label">Uncertainty Radius</span><span class="report-field-value">${data.originPoint?.uncertaintyRadiusMeters != null ? `${(data.originPoint.uncertaintyRadiusMeters / 1000).toFixed(2)} km` : '—'}</span></div>
+          <div class="report-field"><span class="report-field-label">Method</span><span class="report-field-value">Lagrangian back-propagation</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CANDIDATE VESSELS -->
+    <div class="report-section">
+      <div class="report-section-header">
+        <svg viewBox="0 0 24 24"><path d="M3 17l4-8 5 5 3-3 4 6"/><path d="M3 21h18"/></svg>
+        Candidate Vessels &nbsp;<span style="font-weight:400;color:rgb(140,148,160)">(${candidates.length})</span>
+      </div>
+      <div class="report-section-body">
+        ${topCandidateHTML}
+        ${candidates.length ? `<div class="report-vessel-list">${vesselListHTML}</div>` : '<p class="report-empty" style="padding:12px 0">No candidate vessels identified.</p>'}
+      </div>
+    </div>
+
+    <!-- DRIFT & FORECAST -->
+    <div class="report-section">
+      <div class="report-section-header">
+        <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        Drift &amp; Forecast
+      </div>
+      <div class="report-section-body">${driftHTML}</div>
+    </div>
+
+    <!-- FORENSIC ASSESSMENT -->
+    <div class="report-section">
+      <div class="report-section-header">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Forensic Assessment
+      </div>
+      <div class="report-section-body">${assessHTML}</div>
+    </div>
+
+    <!-- DATA & ASSUMPTIONS footer -->
+    <div class="report-footer-disclaimer">
+      <div class="assumptions-header">Data &amp; Assumptions</div>
+      <div class="assumptions-body">
+        <div class="assumption-row">
+          <svg class="assumption-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <p>AIS source: Synthetic demonstration data — vessel positions and tracks are simulated and do not represent real maritime traffic.</p>
+        </div>
+        <div class="assumption-row">
+          <svg class="assumption-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <p>Oil quantity is an estimate based on assumed film thickness. This report does not constitute a legal determination of liability.</p>
+        </div>
+      </div>
+    </div>`;
 }

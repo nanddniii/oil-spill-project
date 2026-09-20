@@ -123,7 +123,9 @@ function buildTrack(vessel, risk) {
     }
   }
 
-  const arrows = [edges[edges.length - 1]].map(([a, b]) => {
+  // Guard: if all points are identical the edges array is empty; skip arrows.
+  const lastEdge = edges.length > 0 ? edges[edges.length - 1] : null;
+  const arrows = lastEdge ? [lastEdge].map(([a, b]) => {
     const angle = bearingDeg(a, b);
 
     const marker = L.marker(
@@ -145,7 +147,7 @@ function buildTrack(vessel, risk) {
         selected: arrowIcon(angle, TRACK_STATES.selected.arrowSize)
       }
     };
-  });
+  }) : [];
 
   return { risk, halo, segments, arrows };
 }
