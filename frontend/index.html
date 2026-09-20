@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,9 @@
     <link rel="stylesheet" href="css/map.css">
     <link rel="stylesheet" href="css/panels.css">
     <link rel="stylesheet" href="css/incidents.css">
+    <link rel="stylesheet" href="css/sysinfo.css">
 </head>
+
 <body>
     <div id="app-container">
 
@@ -18,28 +21,47 @@
 
         <header class="nav-bar">
             <div class="project-logo">
-                <svg class="logo-svg" viewBox="0 0 24 24"><path d="M12 2C8 6 5 10 5 14a7 7 0 0 0 14 0c0-4-3-8-7-12z"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+                <svg class="logo-svg" viewBox="0 0 24 24">
+                    <path d="M12 2C8 6 5 10 5 14a7 7 0 0 0 14 0c0-4-3-8-7-12z" />
+                    <line x1="9" y1="14" x2="15" y2="14" />
+                </svg>
                 <span class="project-title">OIL SPILL DETECTION</span>
             </div>
             <nav class="nav-links">
                 <button class="nav-item active" data-view="view-dashboard" id="nav-dashboard">
-                <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                Dashboard
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                    </svg>
+                    Dashboard
                 </button>
                 <button class="nav-item " data-view="view-incidents" id="nav-incidents">
-                <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-                Incidents Archive
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                        <polyline points="2 17 12 22 22 17" />
+                        <polyline points="2 12 12 17 22 12" />
+                    </svg>
+                    Incidents Archive
                 </button>
                 <button class="nav-item " data-view="view-report" id="nav-report">
-                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                Forensic Report
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                    Forensic Report
                 </button>
                 <button class="nav-item" data-view="view-about" id="nav-about">
-                <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                System Info
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="16" x2="12" y2="12" />
+                        <line x1="12" y1="8" x2="12.01" y2="8" />
+                    </svg>
+                    System Info
                 </button>
             </nav>
-        
+
 
         </header>
 
@@ -49,53 +71,55 @@
                 <div class="map-container-wrapper">
                     <div class="map-layer-control">
                         <div class="layer-control-title">Overlays</div>
-                        
-                        <label class="layer-toggle-item">
-                        <input type="checkbox" id="toggle-spill" checked>
-                        <span class="layer-color-indicator color-spill"></span>
-                        <span>Spill area</span>
-                        </label>
-
-                        
-                        <label class="layer-toggle-item">
-                        <input type="checkbox" id="toggle-origin" checked>
-                        <span class="layer-color-indicator color-origin"></span>
-                        <span>Origin</span>
-                        </label>
-                        
-                        <label class="layer-toggle-item">
-                        <input type="checkbox" id="toggle-drift" checked>
-                        <span class="layer-color-indicator color-drift"></span>
-                        <span>Drift path</span>
-                        </label>
-                        
 
                         <label class="layer-toggle-item">
-                        <input type="checkbox" id="toggle-vessels" checked>
-                        <span class="layer-color-indicator color-vessels"></span>
-                        <span>Vessel tracks</span>
+                            <input type="checkbox" id="toggle-spill" checked>
+                            <span class="layer-color-indicator color-spill"></span>
+                            <span>Spill area</span>
+                        </label>
+
+
+                        <label class="layer-toggle-item">
+                            <input type="checkbox" id="toggle-origin" checked>
+                            <span class="layer-color-indicator color-origin"></span>
+                            <span>Origin</span>
+                        </label>
+
+                        <label class="layer-toggle-item">
+                            <input type="checkbox" id="toggle-drift" checked>
+                            <span class="layer-color-indicator color-drift"></span>
+                            <span>Drift path</span>
+                        </label>
+
+
+                        <label class="layer-toggle-item">
+                            <input type="checkbox" id="toggle-vessels" checked>
+                            <span class="layer-color-indicator color-vessels"></span>
+                            <span>Vessel tracks</span>
                         </label>
                         <label class="layer-toggle-item">
-                        <input type="checkbox" id="toggle-prediction" checked>
-                        <span class="layer-color-indicator color-prediction"></span>
-                        <span>+6h Predicted Spread</span>
+                            <input type="checkbox" id="toggle-prediction" checked>
+                            <span class="layer-color-indicator color-prediction"></span>
+                            <span>+6h Predicted Spread</span>
                         </label>
                     </div>
 
                     <div id="map"></div>
 
-                        <section id="investigation-banner" class="investigation-banner" aria-live="polite" aria-atomic="true" hidden>
-                            <div class="investigation-banner-heading">
-                                <span class="investigation-status-dot" aria-hidden="true"></span>
-                                <div>
-                                    <p id="investigation-banner-state" class="investigation-banner-state"></p>
-                                    <p id="investigation-banner-summary" class="investigation-banner-summary"></p>
-                                </div>
+                    <section id="investigation-banner" class="investigation-banner" aria-live="polite"
+                        aria-atomic="true" hidden>
+                        <div class="investigation-banner-heading">
+                            <span class="investigation-status-dot" aria-hidden="true"></span>
+                            <div>
+                                <p id="investigation-banner-state" class="investigation-banner-state"></p>
+                                <p id="investigation-banner-summary" class="investigation-banner-summary"></p>
                             </div>
-                            <div id="investigation-banner-checks" class="investigation-banner-checks"></div>
-                            <button id="investigation-banner-close" class="investigation-banner-close" type="button" aria-label="Close investigation summary">&times;</button>
-                        </section>
-                        
+                        </div>
+                        <div id="investigation-banner-checks" class="investigation-banner-checks"></div>
+                        <button id="investigation-banner-close" class="investigation-banner-close" type="button"
+                            aria-label="Close investigation summary">&times;</button>
+                    </section>
+
                 </div>
 
                 <aside class="sidebar-panel">
@@ -110,19 +134,23 @@
                                 <form id="investigation-form">
                                     <div class="data-row">
                                         <label class="data-label" for="investigation-latitude">LATITUDE</label>
-                                        <input id="investigation-latitude" name="latitude" type="number" step="any" required>
+                                        <input id="investigation-latitude" name="latitude" type="number" step="any"
+                                            required>
                                     </div>
                                     <div class="data-row">
                                         <label class="data-label" for="investigation-longitude">LONGITUDE</label>
-                                        <input id="investigation-longitude" name="longitude" type="number" step="any" required>
+                                        <input id="investigation-longitude" name="longitude" type="number" step="any"
+                                            required>
                                     </div>
                                     <div class="data-row">
                                         <label class="data-label" for="investigation-timestamp">TIMESTAMP</label>
-                                        <input id="investigation-timestamp" name="timestamp" type="datetime-local" required>
+                                        <input id="investigation-timestamp" name="timestamp" type="datetime-local"
+                                            required>
                                     </div>
                                     <div class="data-row">
                                         <label class="data-label" for="investigation-image">SAR IMAGE</label>
-                                        <input id="investigation-image" name="image" type="file" accept="image/*,.tif,.tiff" required>
+                                        <input id="investigation-image" name="image" type="file"
+                                            accept="image/*,.tif,.tiff" required>
                                     </div>
                                     <button id="investigate-button" type="submit">Investigate</button>
                                     <div id="investigation-status" role="status" aria-live="polite"></div>
@@ -135,9 +163,9 @@
                                 <span class="panel-title">Incident Metadata</span>
                             </div>
                             <div class="panel-body">
-                                
+
                                 <div id="incident-summary-rows" class="data-table-rows">
-                                
+
                                 </div>
                             </div>
                         </section>
@@ -149,20 +177,21 @@
                                 <span class="panel-title">Candidate Vessels</span>
                             </div>
                             <div class="panel-body">
-                                
+
                                 <div id="vessel-candidate-list" class="vessel-list">
-                                
+
                                 </div>
                             </div>
                         </section>
 
-                        <div class="footer-box" >
-                        <div class="panel-body" style="padding: 8px 12px;">
-                            <div id="last-updated" class="data-row" style="border: none; padding: 0; justify-content: flex-start; gap: 8px;">
-                            <span class="data-label" style="font-size: 11px;">LAST UPDATED</span>
-                            <span class="data-value font-mono" style="font-size: 11px;"></span>
+                        <div class="footer-box">
+                            <div class="panel-body" style="padding: 8px 12px;">
+                                <div id="last-updated" class="data-row"
+                                    style="border: none; padding: 0; justify-content: flex-start; gap: 8px;">
+                                    <span class="data-label" style="font-size: 11px;">LAST UPDATED</span>
+                                    <span class="data-value font-mono" style="font-size: 11px;"></span>
+                                </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                 </aside>
@@ -204,8 +233,174 @@
             </div>
         </main>
 
+        <!-- ============  FORENSIC REPORT  ============ -->
+        <main id="view-report" class="app-view">
+            <div class="report-layout custom-scroll">
+                <div class="report-panel">
+                    <!-- Chrome header: title + action buttons -->
+                    <div class="report-chrome-header" id="report-chrome-header">
+                        <div class="report-title-block">
+                            <div class="report-main-title">Forensic Investigation Report</div>
+                            <div class="report-incident-id" id="report-incident-id">—</div>
+                            <div class="report-subtitle">SAR-Based Oil Spill Source Assessment</div>
+                        </div>
+                        <div class="report-actions">
+                            <button class="report-btn report-btn-ghost" id="report-save-btn" onclick="window.print()" title="Save / Print report">
+                                <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                                Save Report
+                            </button>
+                            <button class="report-btn report-btn-primary" id="report-print-btn" onclick="window.print()" title="Print report">
+                                <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                                Print Report
+                            </button>
+                        </div>
+                    </div>
 
+                    <!-- Stat cards — populated by JS -->
+                    <div class="report-stats-row" id="report-stats-row">
+                        <div class="report-stat-card">
+                            <span class="report-stat-label">Detection Confidence</span>
+                            <span class="report-stat-value" id="stat-confidence">—</span>
+                            <span class="report-stat-unit">percent</span>
+                        </div>
+                        <div class="report-stat-card">
+                            <span class="report-stat-label">Spill Area</span>
+                            <span class="report-stat-value" id="stat-area">—</span>
+                            <span class="report-stat-unit">km²</span>
+                        </div>
+                        <div class="report-stat-card">
+                            <span class="report-stat-label">Est. Oil Quantity</span>
+                            <span class="report-stat-value" id="stat-oil">—</span>
+                            <span class="report-stat-unit">tonnes (estimated)</span>
+                        </div>
+                    </div>
 
+                    <!-- Main body — all sections injected by JS -->
+                    <div id="report-body">
+                        <p class="report-empty">Run an investigation from the Dashboard to generate a forensic report.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ============  SYSTEM INFO  ============ -->
+        <main id="view-about" class="app-view">
+            <div class="sysinfo-layout custom-scroll">
+                <section class="sysinfo-panel">
+                    <div class="panel-header">
+                        <span class="panel-title">SYSTEM INFORMATION</span>
+                    </div>
+                    <div class="sysinfo-body">
+                        <div class="sysinfo-page-header">
+                            <h2 class="sysinfo-heading">System Pipeline</h2>
+                            <p class="sysinfo-subtitle">End-to-end investigation stages executed for every SAR upload — from image ingestion to forensic source attribution.</p>
+                        </div>
+
+                        <ol class="pipeline">
+
+                            <li class="pipeline-stage">
+                                <div class="stage-marker"><span class="stage-number">01</span></div>
+                                <div class="stage-content">
+                                    <span class="stage-tag">Input</span>
+                                    <h3 class="stage-title">SAR Detection</h3>
+                                    <p class="stage-desc">Detects potential oil-spill signatures from Synthetic Aperture Radar imagery. The model identifies dark anomalies consistent with surface oil films.</p>
+                                    <p class="stage-output">↳ Spill mask · Detection confidence</p>
+                                </div>
+                            </li>
+
+                            <li class="pipeline-connector" aria-hidden="true"><span class="connector-line"></span></li>
+
+                            <li class="pipeline-stage">
+                                <div class="stage-marker"><span class="stage-number">02</span></div>
+                                <div class="stage-content">
+                                    <span class="stage-tag">Geometry</span>
+                                    <h3 class="stage-title">Spill Geometry</h3>
+                                    <p class="stage-desc">Determines the approximate shape, area, and spatial characteristics of the detected spill by fitting a polygon to the segmentation mask.</p>
+                                    <p class="stage-output">↳ Area (km²) · Polygon boundary · Length (nm)</p>
+                                </div>
+                            </li>
+
+                            <li class="pipeline-connector" aria-hidden="true"><span class="connector-line"></span></li>
+
+                            <li class="pipeline-stage">
+                                <div class="stage-marker"><span class="stage-number">03</span></div>
+                                <div class="stage-content">
+                                    <span class="stage-tag">Estimation</span>
+                                    <h3 class="stage-title">Oil Quantity Estimate</h3>
+                                    <p class="stage-desc">Estimates the approximate quantity of oil based on the detected spill area and an assumed film thickness range. Results are a bounded estimate, not an exact measurement.</p>
+                                    <p class="stage-output">↳ Volume range (m³) · Mass range (tonnes) · Thickness assumption (µm)</p>
+                                </div>
+                            </li>
+
+                            <li class="pipeline-connector" aria-hidden="true"><span class="connector-line"></span></li>
+
+                            <li class="pipeline-stage">
+                                <div class="stage-marker"><span class="stage-number">04</span></div>
+                                <div class="stage-content">
+                                    <span class="stage-tag">Reconstruction</span>
+                                    <h3 class="stage-title">Origin Reconstruction</h3>
+                                    <p class="stage-desc">Uses Lagrangian drift back-propagation from the spill's observed location to reconstruct the probable source point and discharge time window.</p>
+                                    <p class="stage-output">↳ Origin lat/lng · Uncertainty radius (km) · Discharge window</p>
+                                </div>
+                            </li>
+
+                            <li class="pipeline-connector" aria-hidden="true"><span class="connector-line"></span></li>
+
+                            <li class="pipeline-stage">
+                                <div class="stage-marker"><span class="stage-number">05</span></div>
+                                <div class="stage-content">
+                                    <span class="stage-tag">Correlation</span>
+                                    <h3 class="stage-title">AIS Correlation</h3>
+                                    <p class="stage-desc">Cross-references the reconstructed origin with vessel trajectory data. Identifies vessels that were spatially and temporally proximate to the discharge window.</p>
+                                    <p class="stage-output">↳ Candidate vessel list · AIS gap flags · Trajectory overlap</p>
+                                </div>
+                            </li>
+
+                            <li class="pipeline-connector" aria-hidden="true"><span class="connector-line"></span></li>
+
+                            <li class="pipeline-stage">
+                                <div class="stage-marker"><span class="stage-number">06</span></div>
+                                <div class="stage-content">
+                                    <span class="stage-tag">Scoring</span>
+                                    <h3 class="stage-title">Candidate Ranking</h3>
+                                    <p class="stage-desc">Scores each candidate vessel using a composite metric: proximity to origin, trajectory alignment, AIS signal gaps, and speed anomalies. Vessels are ranked highest-to-lowest.</p>
+                                    <p class="stage-output">↳ Suspicion score (0–100) · Risk level · Score breakdown</p>
+                                </div>
+                            </li>
+
+                            <li class="pipeline-connector" aria-hidden="true"><span class="connector-line"></span></li>
+
+                            <li class="pipeline-stage">
+                                <div class="stage-marker"><span class="stage-number">07</span></div>
+                                <div class="stage-content">
+                                    <span class="stage-tag">Forecast</span>
+                                    <h3 class="stage-title">Drift / Forecast</h3>
+                                    <p class="stage-desc">Uses wind and surface current vectors to project the spill's predicted position and spread at +6 hours from SAR acquisition time.</p>
+                                    <p class="stage-output">↳ +6 h predicted polygon · Drift path waypoints</p>
+                                </div>
+                            </li>
+
+                        </ol>
+
+                        <!-- DATA & ASSUMPTIONS -->
+                        <div class="sysinfo-assumptions">
+                            <div class="assumptions-header">Data &amp; Assumptions</div>
+                            <div class="assumptions-body">
+                                <div class="assumption-row">
+                                    <svg class="assumption-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                    <p>AIS source: Synthetic demonstration data — vessel positions and tracks are simulated and do not represent real maritime traffic.</p>
+                                </div>
+                                <div class="assumption-row">
+                                    <svg class="assumption-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                    <p>Oil quantity is an estimate based on assumed film thickness. Actual volume may differ depending on emulsification, weathering, and sub-surface components.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+            </div>
+        </main>
 
 
 
@@ -218,8 +413,9 @@
 
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  
 
-  <script type="module" src="js/app.js"></script>
+
+    <script type="module" src="js/app.js"></script>
 </body>
+
 </html>
